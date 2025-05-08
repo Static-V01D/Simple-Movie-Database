@@ -18,10 +18,15 @@ public class App
 
         Console.WriteLine($"Server started on " + host);
 
-        var authController = new AuthenticationController();
+        var userRepository = new MockUserRepository();
+        var userService = new MockUserService(userRepository);
+
+        var authController = new AuthenticationController(userService);
+        var userController = new UserController(userService);
+
         router = new HttpRouter();
         router.AddGet("/", authController.LandingPageGet);
-       
+        router.AddGet("/users", userController.ViewAllGet);
     }
 
     public async Task Start()
