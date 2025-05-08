@@ -1,5 +1,6 @@
 namespace SMDB;
 using System;
+using System.Collections;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 public class App
 {
     private HttpListener server;
+    private HttpRouter router;
 
     public App()
     {
@@ -15,6 +17,10 @@ public class App
         server.Prefixes.Add(host);
 
         Console.WriteLine($"Server started on " + host);
+
+        var authController = new AuthenticationController();
+        router = new HttpRouter();
+        router.AddGet("/", authController.LandingPageGet);
        
     }
 
@@ -37,20 +43,11 @@ public class App
     private async Task HandleContextAsync(HttpListenerContext ctx)
     {
         var req = ctx.Request;
-        var res = ctx.Response;
-        
-        if(req.HttpMethod == "GET" && req.Url!.AbsolutePath == "/")
-        {
-            string html = "HELLO";
-            byte[] content = Encoding.UTF8.GetBytes(html);
+        var res = ctx.Response;        
+        var options = new Hashtable();
 
-            res.StatusCode = (int)HttpStatusCode.OK;
-            res.ContentEncoding = Encoding.UTF8;
-            res.ContentType = "text/plain";
-            res.ContentLength64 = content.LongLength;
-            await res.OutputStream.WriteAsync(content);
-            res.Close();
-        }
-        
+        await router.Handle(req, res, options);
+        res.Close();
     }
+      
 }
