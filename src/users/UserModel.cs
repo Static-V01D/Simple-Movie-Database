@@ -19,4 +19,6 @@ public class User
         Salt = salt;
         Role = role;
     }
+
+    
 }

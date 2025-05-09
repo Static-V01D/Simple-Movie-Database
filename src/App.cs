@@ -25,8 +25,12 @@ public class App
         var userController = new UserController(userService);
 
         router = new HttpRouter();
+       // router.Use(HttpUtils.ReadRequestFormData);  
+
         router.AddGet("/", authController.LandingPageGet);
         router.AddGet("/users", userController.ViewAllGet);
+        router.AddGet("/users/add", userController.AddGet);
+        router.AddPost("/users/add", HttpUtils.ReadRequestFormData, userController.AddPost);
     }
 
     public async Task Start()

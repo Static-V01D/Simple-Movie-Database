@@ -39,12 +39,11 @@ public class MockUserRepository : IUserRepository
         return await Task.FromResult(PagedResult);
     }
     
-    public async Task<User?> Create(User user)
+    public async Task<User?> Create(User newUser)
     {
-        user.Id = IdCount++;
-        users.Add(user);
-
-        return await Task.FromResult(user);
+        newUser.Id = IdCount++;
+        users.Add(newUser);       
+        return await Task.FromResult(newUser);
 
     }
     public async Task<User?> Read(int id)

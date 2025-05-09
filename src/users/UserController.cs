@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Collections.Specialized;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 namespace SMDB;
 
@@ -10,10 +13,10 @@ public class UserController
     {
         this.userService = userService;
     }
-    // /users?page=1&limit=5
+    // GET/users?page=1&limit=5
     public async Task ViewAllGet(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {       
-
+        string message = req.QueryString["message"] ?? "";
         int page = int.TryParse(req.QueryString["page"], out int p) ? p : 1;
         int size = int.TryParse(req.QueryString["size"], out int s) ? s : 5;
 
@@ -33,6 +36,7 @@ public class UserController
             }
 
             string html = $@"
+            <a href=""/users/add"">Add New User</a>
             <table border=""1"">
                 <thead>
                     <tr>
@@ -54,7 +58,8 @@ public class UserController
                 <span>Page {page} of {pageCount}</span>
                 <a href=""?page={page + 1}&size={size}"">Next</a>
                 <a href=""?page={pageCount}&size={size}"">Last</a>
-            </div>                
+            </div>     
+            <div>Total Users: {message}</div>           
             ";
 
            string content = HtmlTemplates.Base("SMDB","Users View All Page", html);
@@ -62,4 +67,59 @@ public class UserController
            await HttpUtils.Respond(res, req, options, html, (int)HttpStatusCode.OK);
         }
     }
-}
+    // GET/users/add
+    public async Task AddGet(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
+    {
+       string message = req.QueryString["message"] ?? "";
+        string roles = "";
+
+        foreach (string role in Roles.ROLES)
+        {
+            roles += $@"<option value=""{role}"">{role}</option>";
+        }
+        string html = $@"
+        <form method=""POST"" action=""/users/add"">
+            <label for=""username"">Username:</label>
+            <input type=""text"" id=""username"" name=""username"" required><br><br>
+            <label for=""password"">Password:</label>
+            <input type=""password"" id=""password"" name=""password"" required><br><br>
+            <label for=""role"">Role:</label>
+            <select id=""role"" name=""role"">
+                {roles}
+            </select><br><br>
+            <input type=""submit"" value=""Add User"">
+        </form>
+        <div>{message}</div>
+        ";
+
+        string content = HtmlTemplates.Base("SMDB","User Add Page", html);
+    
+        await HttpUtils.Respond(res, req, options, html, (int)HttpStatusCode.OK);
+    }
+
+    // POST/users/add/
+    public async Task AddPost(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
+    {
+        var formData = (NameValueCollection?)options["req.form"] ?? [];
+
+        string username = formData["username"] ?? "";
+        string password = formData["password"] ?? "";
+        string role = formData["role"] ?? "";      
+
+        
+
+        User newUser = new User(0, username, password, "", role);
+        Result<User> result = await userService.Create(newUser);
+
+        if(result.IsValid)
+        {
+            options["message"] = "User created successfully!";
+           await HttpUtils.Redirect(res, req, options, "/users");
+        }
+        else
+        {
+            options["message"] = result.Error!.Message;
+            await HttpUtils.Redirect(res, req, options, "/users/add");
+        }
+    }
+} 
