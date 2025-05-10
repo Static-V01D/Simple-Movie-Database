@@ -7,7 +7,7 @@ namespace SMDB;
 
 public class HttpUtils
 {
-    public static async Task Respond(HttpListenerResponse res, HttpListenerRequest req,Hashtable options, string body,int statusCode)
+    public static async Task Respond(HttpListenerResponse res, HttpListenerRequest req,Hashtable options, int statusCode, string body)
     {
        byte[] content = Encoding.UTF8.GetBytes(body);
 

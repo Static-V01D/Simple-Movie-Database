@@ -43,7 +43,8 @@ public class App
         while (server.IsListening)
         {
            var ctx = server.GetContext();
-           await HandleContextAsync(ctx);
+
+           _ = HandleContextAsync(ctx); 
         }
         
     }
@@ -58,9 +59,42 @@ public class App
         var req = ctx.Request;
         var res = ctx.Response;        
         var options = new Hashtable();
+       
 
-        await router.Handle(req, res, options);
-        res.Close();
+        try
+        {
+            res.StatusCode = HttpRouter.RESPONSE_NOT_SENT_YET;           
+            await router.Handle(req, res, options);
+        }
+        catch (Exception ex)
+        {            
+            Console.Error.WriteLine(ex);           
+
+            if(res.StatusCode == HttpRouter.RESPONSE_NOT_SENT_YET)
+            {
+                if(Environment.GetEnvironmentVariable("DEVELOPMENT_MODE")!= "Production")
+                {
+                  await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.InternalServerError, ex.ToString());
+                }
+                else 
+                {
+                    await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.InternalServerError, "An error occurred. Please try again later.");
+                }
+              
+            }
+        }
+        finally
+        {
+            if(res.StatusCode == HttpRouter.RESPONSE_NOT_SENT_YET)
+            {
+                res.StatusCode = (int)HttpStatusCode.NotFound;
+                res.ContentType = "text/plain";
+                byte[] content = Encoding.UTF8.GetBytes("404 Not Found");
+                res.ContentLength64 = content.LongLength;
+                await res.OutputStream.WriteAsync(content);
+                res.Close();
+            }
+        }
     }
       
 }
