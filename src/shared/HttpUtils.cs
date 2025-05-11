@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Specialized;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -7,6 +8,24 @@ namespace SMDB;
 
 public class HttpUtils
 {
+    public static void AddOptions(Hashtable options, string name, string key, string value)
+    {
+       var prop = (NameValueCollection?) options[name] ?? [];
+
+       options[name] = prop;
+
+       prop[key] = value;
+
+    }
+     public static void AddOptions(Hashtable options, string name, NameValueCollection entries)
+    {
+       var prop = (NameValueCollection?) options[name] ?? [];
+
+       options[name] = prop;
+
+       prop.Add(entries);
+
+    }
     public static async Task Respond(HttpListenerResponse res, HttpListenerRequest req,Hashtable options, int statusCode, string body)
     {
        byte[] content = Encoding.UTF8.GetBytes(body);
@@ -20,10 +39,16 @@ public class HttpUtils
     }
      public static async Task Redirect(HttpListenerResponse res, HttpListenerRequest req,Hashtable options, string location)
     {
-        string message = (string?) options["message"] ?? "";
-        string query = string.IsNullOrWhiteSpace(message) ? "" : "?message=" + HttpUtility.UrlEncode(message);
+       var redirectProps = (NameValueCollection?) options["redirect"] ?? [];
+       var query = new List<string>();
+       var append = location.Contains('?') ? '&' : '?';
+        
+        foreach(var key in redirectProps.AllKeys)
+        {
+            query.Add($"{HttpUtility.UrlEncode(key)} ={HttpUtility.UrlEncode(redirectProps[key])}");
+        }        
 
-        res.Redirect(location + query);
+        res.Redirect(location + append + string.Join('&', query));
         res.Close();
 
        await Task.CompletedTask;

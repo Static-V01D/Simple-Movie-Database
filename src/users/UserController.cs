@@ -76,25 +76,30 @@ public class UserController
 
            string content = HtmlTemplates.Base("SMDB","Users View All Page", html);
         
-           await HttpUtils.Respond(res, req, options, html, (int)HttpStatusCode.OK);
+           await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.OK, html);
         }
     }
     // GET/users/add
     public async Task AddGet(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
-       string message = req.QueryString["message"] ?? "";
+        string username = req.QueryString["username"] ?? "";
+        string password = req.QueryString["password"] ?? "";
+        string role = req.QueryString["role"] ?? "";
+        string message = req.QueryString["message"] ?? "";
+
         string roles = "";
 
-        foreach (string role in Roles.ROLES)
+        foreach (string r in Roles.ROLES)
         {
-            roles += $@"<option value=""{role}"">{role}</option>";
+            string selected = r == role ? " selected" : "";
+            roles += $@"<option value=""{r}""{selected}>{r}</option>";
         }
         string html = $@"
         <form method=""POST"" action=""/users/add"">
             <label for=""username"">Username:</label>
-            <input type=""text"" id=""username"" name=""username"" required><br><br>
+            <input type=""text"" id=""username"" name=""username"" placeholder=""Username"" value =""{username}""><br><br>
             <label for=""password"">Password:</label>
-            <input type=""password"" id=""password"" name=""password"" required><br><br>
+            <input type=""password"" id=""password"" name=""password"" placeholder=""Password"" value =""{password}""><br><br>
             <label for=""role"">Role:</label>
             <select id=""role"" name=""role"">
                 {roles}
@@ -106,7 +111,7 @@ public class UserController
 
         string content = HtmlTemplates.Base("SMDB","User Add Page", html);
     
-        await HttpUtils.Respond(res, req, options, html, (int)HttpStatusCode.OK);
+        await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.OK, html);
     }
 
     // POST/users/add/
@@ -125,13 +130,14 @@ public class UserController
 
         if(result.IsValid)
         {
-            options["message"] = "User created successfully!";
+           HttpUtils.AddOptions(options, "redirect", "message", "User added successfully!");        
+
            await HttpUtils.Redirect(res, req, options, "/users");
         }
         else
         {
-            options["message"] = result.Error!.Message;
-            await HttpUtils.Redirect(res, req, options, "/users/add");
+            HttpUtils.AddOptions(options, "redirect", formData);
+            await HttpUtils.Redirect(res, req, options, $"/users/add?username={Uri.EscapeDataString(username)}&password={Uri.EscapeDataString(password)}&role={Uri.EscapeDataString(role)}&message={Uri.EscapeDataString(result.Error!.Message)}");
         }
     }
 
@@ -175,7 +181,7 @@ public class UserController
 
            string content = HtmlTemplates.Base("SMDB","Users View Page", html);
         
-           await HttpUtils.Respond(res, req, options, html, (int)HttpStatusCode.OK);
+           await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.OK, html);
         }
     }
 
@@ -217,7 +223,7 @@ public class UserController
 
             string content = HtmlTemplates.Base("SMDB","User Edit Page", html);
         
-            await HttpUtils.Respond(res, req, options, html, (int)HttpStatusCode.OK);
+            await HttpUtils.Respond(res, req, options,(int)HttpStatusCode.OK, html);
         } 
         //You can add an else statement here to handle the case when the user is not found. AND ADD A PAGE THAT IS COOLER
         
@@ -270,4 +276,4 @@ public class UserController
             await HttpUtils.Redirect(res, req, options, "/users");
         }
     }
-} 
+}

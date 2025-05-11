@@ -17,6 +17,13 @@ public class AuthenticationController
     {
         string html = $@"
         <nav>
+            <head>
+                <title>SMDB</title>
+                <link rel=""stylesheet"" href=""/css/style.css"">
+                <link rel=""icon"" type=""image/x-icon"" href=""/favicon.png"">
+                <script type=""text/javascript"" src=""/js/main.js"" defer></script>
+                <script type=""text/javascript"" src=""/js/landing.js"" defer></script>
+            </head>
             <ul>
                 <li><a href=""/register"">Register</a></li>
                 <li><a href=""/login"">Login</a></li>
@@ -30,7 +37,7 @@ public class AuthenticationController
 
         string content = HtmlTemplates.Base("SMDB","Landing Page", html);
         
-        await HttpUtils.Respond(res, req, options, html, (int)HttpStatusCode.OK);
+        await HttpUtils.Respond(res, req, options,(int)HttpStatusCode.OK, html);
     }
 
 

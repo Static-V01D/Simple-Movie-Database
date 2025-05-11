@@ -10,11 +10,14 @@ public class App
     private HttpListener server;
     private HttpRouter router;
 
+    private int requestId;
+
     public App()
     {
         string host = "http://localhost:8080/";
         server = new HttpListener();
         server.Prefixes.Add(host);
+        requestId = 0;
 
         Console.WriteLine($"Server started on " + host);
 
@@ -35,6 +38,12 @@ public class App
         router.AddGet("/users/edit", userController.EditGet);
         router.AddPost("/users/edit", HttpUtils.ReadRequestFormData, userController.EditPost);
         router.AddGet("/users/remove", userController.RemoveGet);
+        router.AddPost("/register");
+        router.AddGet("/login");
+        router.AddGet("/logout");
+        router.AddGet("/actors");
+        router.AddGet("/movies");
+
     }
 
     public async Task Start()
@@ -54,47 +63,56 @@ public class App
         server.Stop();
         server.Close();
     }
-    private async Task HandleContextAsync(HttpListenerContext ctx)
+    private async Task HandleContextAsync(HttpListenerContext ctx) // Handle the incoming request
     {
         var req = ctx.Request;
         var res = ctx.Response;        
         var options = new Hashtable();
-       
+        string error = "";
+
+        res.StatusCode = HttpRouter.RESPONSE_NOT_SENT_YET;   
+        DateTime startTime = DateTime.UtcNow;
+        requestId++;
 
         try
-        {
-            res.StatusCode = HttpRouter.RESPONSE_NOT_SENT_YET;           
+        {                   
             await router.Handle(req, res, options);
         }
         catch (Exception ex)
         {            
-            Console.Error.WriteLine(ex);           
+            error = ex.ToString();         
 
-            if(res.StatusCode == HttpRouter.RESPONSE_NOT_SENT_YET)
+            if(res.StatusCode == HttpRouter.RESPONSE_NOT_SENT_YET) // Handle 500 Internal Server Error
             {
                 if(Environment.GetEnvironmentVariable("DEVELOPMENT_MODE")!= "Production")
                 {
-                  await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.InternalServerError, ex.ToString());
+                  string html = HtmlTemplates.Base("SimpleMDB", "Error page", ex.ToString());
+                  await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.InternalServerError, html);
                 }
                 else 
                 {
-                    await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.InternalServerError, "An error occurred. Please try again later.");
+                    string html = HtmlTemplates.Base("SimpleMDB", "Error page", "An error occurred. Please try again later.");
+                    await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.InternalServerError, html);
                 }
               
             }
         }
         finally
-        {
-            if(res.StatusCode == HttpRouter.RESPONSE_NOT_SENT_YET)
+        {           
+            if(res.StatusCode == HttpRouter.RESPONSE_NOT_SENT_YET) // If the response has not been sent yet, send a 404 Not Found response
             {
-                res.StatusCode = (int)HttpStatusCode.NotFound;
-                res.ContentType = "text/plain";
-                byte[] content = Encoding.UTF8.GetBytes("404 Not Found");
-                res.ContentLength64 = content.LongLength;
-                await res.OutputStream.WriteAsync(content);
-                res.Close();
+                // Handle 404 Not Found
+                string html = HtmlTemplates.Base("SimpleMDB", "Page Not Found", "Resource not found"); 
+                await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.NotFound, html);
             }
+
+            string rid = req.Headers["X-Request-ID"] ?? requestId.ToString().PadLeft(6, ' ');
+            TimeSpan elapsedTime = DateTime.UtcNow - startTime;           
+
+            Console.WriteLine($"Request {rid}: {req.HttpMethod} {req.RawUrl} from {req.UserHostName} --> {res.StatusCode} ({res.ContentLength64} bytes) in {elapsedTime.TotalMilliseconds} ms Error: \"{error}\"");
+           
         }
     }
       
 }
+
