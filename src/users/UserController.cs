@@ -83,7 +83,7 @@ public class UserController
     public async Task AddGet(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {
         string username = req.QueryString["username"] ?? "";
-        string password = req.QueryString["password"] ?? "";
+       
         string role = req.QueryString["role"] ?? "";
         string message = req.QueryString["message"] ?? "";
 
@@ -99,7 +99,7 @@ public class UserController
             <label for=""username"">Username:</label>
             <input type=""text"" id=""username"" name=""username"" placeholder=""Username"" value =""{username}""><br><br>
             <label for=""password"">Password:</label>
-            <input type=""password"" id=""password"" name=""password"" placeholder=""Password"" value =""{password}""><br><br>
+            <input type=""password"" id=""password"" name=""password"" placeholder=""Password""><br><br>
             <label for=""role"">Role:</label>
             <select id=""role"" name=""role"">
                 {roles}
@@ -136,8 +136,12 @@ public class UserController
         }
         else
         {
-            HttpUtils.AddOptions(options, "redirect", formData);
-            await HttpUtils.Redirect(res, req, options, $"/users/add?username={Uri.EscapeDataString(username)}&password={Uri.EscapeDataString(password)}&role={Uri.EscapeDataString(role)}&message={Uri.EscapeDataString(result.Error!.Message)}");
+            HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);
+            HttpUtils.AddOptions(options, "redirect","username", formData["username"]);
+            HttpUtils.AddOptions(options, "redirect","role", formData["role"]);
+
+            
+            await HttpUtils.Redirect(res, req, options, $"/users/add?username={Uri.EscapeDataString(username)}&role={Uri.EscapeDataString(role)}&message={Uri.EscapeDataString(result.Error!.Message)}");
         }
     }
 
