@@ -18,7 +18,10 @@ public class User
         Password = password;
         Salt = salt;
         Role = role;
+    }   
+    public override string ToString()
+    {
+        return $"User[Id={Id}, Username ={Username}, Password={Password}, Salt={Salt}, Role={Role}]";
     }
-
     
 }

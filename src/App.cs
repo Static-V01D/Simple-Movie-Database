@@ -23,27 +23,46 @@ public class App
 
         var userRepository = new MockUserRepository();
         var userService = new MockUserService(userRepository);
-
         var authController = new AuthenticationController(userService);
         var userController = new UserController(userService);
 
+        var ActorRepository = new MockActorRepository();
+        var ActorService = new MockActorService(ActorRepository);       
+        var ActorController = new ActorController(ActorService);
+
+        var MovieRepository = new MockMovieRepository();
+        var MovieService = new MockMovieService(MovieRepository);       
+        var MovieController = new MovieController(MovieService);
+
         router = new HttpRouter();
-       // router.Use(HttpUtils.ReadRequestFormData);  
+        router.Use(HttpUtils.ServeStaticFile);
 
         router.AddGet("/", authController.LandingPageGet);
-        router.AddGet("/users", userController.ViewAllGet);
-        router.AddGet("/users/add", userController.AddGet);
-        router.AddPost("/users/add", HttpUtils.ReadRequestFormData, userController.AddPost);
-        router.AddGet("/users/view", userController.ViewGet);
-        router.AddGet("/users/edit", userController.EditGet);
-        router.AddPost("/users/edit", HttpUtils.ReadRequestFormData, userController.EditPost);
-        router.AddGet("/users/remove", userController.RemoveGet);
-        router.AddPost("/register");
-        router.AddGet("/login");
-        router.AddGet("/logout");
-        router.AddGet("/actors");
-        router.AddGet("/movies");
 
+        router.AddGet("/users", userController.ViewAllUsers);
+        router.AddGet("/users/add", userController.AddUserGet);
+        router.AddPost("/users/add", HttpUtils.ReadRequestFormData, userController.AddUserPost);
+        router.AddGet("/users/view", userController.ViewUserGet);
+        router.AddGet("/users/edit", userController.EditUserGet);
+        router.AddPost("/users/edit", HttpUtils.ReadRequestFormData, userController.EditUserPost);
+        router.AddPost("/users/remove", userController.RemoveUserPost);
+
+
+        router.AddGet("/Actors", ActorController.ViewAllActors);
+        router.AddGet("/Actors/add", ActorController.AddActorGet);
+        router.AddPost("/Actors/add", HttpUtils.ReadRequestFormData, ActorController.AddActorPost);
+        router.AddGet("/Actors/view", ActorController.ViewActorGet);
+        router.AddGet("/Actors/edit", ActorController.EditActorGet);
+        router.AddPost("/Actors/edit", HttpUtils.ReadRequestFormData, ActorController.EditActorPost);
+        router.AddPost("/Actors/remove", ActorController.RemoveActorPost);
+
+        router.AddGet("/Movies", MovieController.ViewAllMovies);
+        router.AddGet("/Movies/add", MovieController.AddMovieGet);
+        router.AddPost("/Movies/add", HttpUtils.ReadRequestFormData, MovieController.AddMoviePost);
+        router.AddGet("/Movies/view", MovieController.ViewMovieGet);
+        router.AddGet("/Movies/edit", MovieController.EditMovieGet);
+        router.AddPost("/Movies/edit", HttpUtils.ReadRequestFormData, MovieController.EditMoviePost);
+        router.AddPost("/Movies/remove", MovieController.RemoveMoviePost);
     }
 
     public async Task Start()
@@ -69,6 +88,13 @@ public class App
         var res = ctx.Response;        
         var options = new Hashtable();
         string error = "";
+
+        var rid = req.Headers["X-request-ID"] ?? requestId.ToString().PadLeft(6,' ');
+        var method = req.HttpMethod;
+        var rawUrl = req.RawUrl;
+        var remoteEndpoint = req.RemoteEndPoint;
+        
+
 
         res.StatusCode = HttpRouter.RESPONSE_NOT_SENT_YET;   
         DateTime startTime = DateTime.UtcNow;
@@ -106,10 +132,10 @@ public class App
                 await HttpUtils.Respond(res, req, options, (int)HttpStatusCode.NotFound, html);
             }
 
-            string rid = req.Headers["X-Request-ID"] ?? requestId.ToString().PadLeft(6, ' ');
-            TimeSpan elapsedTime = DateTime.UtcNow - startTime;           
+           
+            TimeSpan elapsedTime = DateTime.UtcNow - startTime;          
 
-            Console.WriteLine($"Request {rid}: {req.HttpMethod} {req.RawUrl} from {req.UserHostName} --> {res.StatusCode} ({res.ContentLength64} bytes) in {elapsedTime.TotalMilliseconds} ms Error: \"{error}\"");
+            Console.WriteLine($"Request {rid}: {method} {rawUrl} from {remoteEndpoint} --> {res.StatusCode} ({res.ContentLength64} bytes) [{res.ContentType}] in {elapsedTime.TotalMilliseconds} ms Error: \"{error}\"");
            
         }
     }
