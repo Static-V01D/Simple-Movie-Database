@@ -74,7 +74,7 @@ public class MovieController
         {
            HttpUtils.AddOptions(options, "redirect", "message", "Movie added successfully!");        
 
-           await HttpUtils.Redirect(res, req, options, "/Movies"); //PRG
+           await HttpUtils.Redirect(res, req, options, "/movies"); //PRG
         }
         else
         {
@@ -82,7 +82,7 @@ public class MovieController
             HttpUtils.AddOptions(options, "redirect", formData);   
 
             
-            await HttpUtils.Redirect(res, req, options, "/Movies/add");
+            await HttpUtils.Redirect(res, req, options, "/movies/add");
         }
     }
 
@@ -109,7 +109,7 @@ public class MovieController
         else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);
-            await HttpUtils.Redirect(res, req, options, "/Movies");
+            await HttpUtils.Redirect(res, req, options, "/movies");
         }
     }
 
@@ -134,7 +134,7 @@ public class MovieController
          else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);
-            await HttpUtils.Redirect(res, req, options, "/Movies");
+            await HttpUtils.Redirect(res, req, options, "/movies");
         }
         
     }
@@ -157,17 +157,17 @@ public class MovieController
         if(result.IsValid)
         {
            HttpUtils.AddOptions(options, "redirect", "message", "Movie updated successfully!");
-           await HttpUtils.Redirect(res, req, options, "/Movies");
+           await HttpUtils.Redirect(res, req, options, "/movies");
         }
         else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);            
 
-            await HttpUtils.Redirect(res, req, options, "/Movies/edit");
+            await HttpUtils.Redirect(res, req, options, $"/movies/edit?mid={mid}");
         }
     }
 
-    // GET Movies/delete?mid={id}
+    // GET movies/delete?mid={id}
 
      public async Task RemoveMoviePost(HttpListenerRequest req, HttpListenerResponse res, Hashtable options)
     {       
@@ -178,12 +178,12 @@ public class MovieController
        if(result.IsValid)
         {
            HttpUtils.AddOptions(options, "redirect", "message", "Movie removed successfully!");
-           await HttpUtils.Redirect(res, req, options, "/Movies");
+           await HttpUtils.Redirect(res, req, options, "/movies");
         }
         else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);
-            await HttpUtils.Redirect(res, req, options, "/Movies/edit");
+            await HttpUtils.Redirect(res, req, options, "/movies/edit");
         }
     }
 }

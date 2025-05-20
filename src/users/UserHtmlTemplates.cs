@@ -15,10 +15,10 @@ public class UserHtmlTemplates
                 <td>{User.Role}</td>
                 <td>{User.Password}</td>
                 <td>{User.Salt}</td>
-                <td><a href =""/Users/view?uid={User.Id}"">View</td>
-                <td><a href =""/Users/edit?uid={User.Id}"">Edit</td>
+                <td><a href =""/users/view?uid={User.Id}"">View</td>
+                <td><a href =""/users/edit?uid={User.Id}"">Edit</td>
                 <td>
-                <form action =""/Users/remove?uid={User.Id}"" method=""POST"" onsubmit=""return confirm('Are you sure you want to remove this User?');"">
+                <form action =""/users/remove?uid={User.Id}"" method=""POST"" onsubmit=""return confirm('Are you sure you want to remove this User?');"">
                     <input type=""submit"" value=""Remove"">
                 </form>
                 </td>
@@ -27,7 +27,7 @@ public class UserHtmlTemplates
 
             string html = $@"
             <div class =""add"">
-             <a href=""/Users/add"">Add New User</a>
+             <a href=""/users/add"">Add New User</a>
             </div>
             <table class=""viewall"">
                 <thead>
@@ -70,7 +70,7 @@ public class UserHtmlTemplates
         }
 
           string html = $@"
-        <form class =""addform"" method=""POST"" action=""/Users/add"">
+        <form class =""addform"" method=""POST"" action=""/users/add"">
             <label for=""Username"">Username:</label>
             <input type=""text"" id=""Username"" name=""Username"" placeholder=""Username"" value =""{Username}""><br><br>
             <label for=""password"">Password:</label>
@@ -123,7 +123,7 @@ public class UserHtmlTemplates
                 roles += $@"<option value=""{role}""{selected}>{role}</option>";
             }
             string html = $@"
-            <form  class =""editform""  method=""POST"" action=""/Users/edit?uid={uid}"">
+            <form  class =""editform""  method=""POST"" action=""/users/edit?uid={uid}"">
                 <label for=""Username"">Username:</label>
                 <input type=""text"" id=""Username"" name=""Username"" required value=""{User.Username}""><br><br>
                 <label for=""password"">Password:</label>

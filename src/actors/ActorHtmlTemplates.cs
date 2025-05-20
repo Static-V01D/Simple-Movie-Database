@@ -14,19 +14,20 @@ public class ActorHtmlTemplates
                 <td>{Actor.LastName}</td>
                 <td>{Actor.Bio}</td>
                 <td>{Actor.Rating}</td>
-                <td><a href =""/Actors/view?aid={Actor.Id}"">View</td>
-                <td><a href =""/Actors/edit?aid={Actor.Id}"">Edit</td>
+                <td><a href =""/actors/view?aid={Actor.Id}"">View</td>
+                <td><a href =""/actors/edit?aid={Actor.Id}"">Edit</td>             
                 <td>
-                <form action =""/Actors/remove?aid={Actor.Id}"" method=""POST"" onsubmit=""return confirm('Are you sure you want to remove this Actor?');"">
+                <form action =""/actors/remove?aid={Actor.Id}"" method=""POST"" onsubmit=""return confirm('Are you sure you want to remove this Actor?');"">
                     <input type=""submit"" value=""Remove"">
                 </form>
                 </td>
+                <td><a href =""/actors/movies?aid={Actor.Id}"">Movies</td>
                 </tr>";
             }
 
             string html = $@"
             <div class =""add"">
-             <a href=""/Actors/add"">Add New Actor</a>
+             <a href=""/actors/add"">Add New Actor</a>
             </div>
             <table class=""viewall"">
                 <thead>
@@ -63,11 +64,11 @@ public class ActorHtmlTemplates
 
 
           string html = $@"
-        <form class =""addform"" method=""POST"" action=""/Actors/add"">
+        <form class =""addform"" method=""POST"" action=""/actors/add"">
             <label for=""firstName"">First Name:</label>
             <input type=""text"" id=""firstName"" name=""firstName"" placeholder=""first Name"" value =""{firstName}""><br><br>
             <label for=""LastName"">Last Name:</label>
-            <input type=""text"" id=""LastName"" name=""LastName"" placeholder=""Last Name"" value=""lastName""><br><br>
+            <input type=""text"" id=""LastName"" name=""LastName"" placeholder=""Last Name"" value=""{lastName}""><br><br>
             <label for=""Bio"">Last Name:</label>
             <input type=""Bio"" id=""Bio"" name=""Bio"" placeholder=""Bio"" value=""{bio}""><br><br>
             <label for=""Rating"">Rating:</label>
@@ -111,7 +112,7 @@ public class ActorHtmlTemplates
        
 
             string html = $@"
-            <form  class =""editform""  method=""POST"" action=""/Actors/edit?aid={aid}"">
+            <form  class =""editform""  method=""POST"" action=""/actors/edit?aid={aid}"">
                 <label for=""firstName"">firstName:</label>
                 <input type=""text"" id=""firstName"" name=""firstName"" required value=""{Actor.FirstName}""><br><br>
                 <label for=""LastName"">LastName:</label>

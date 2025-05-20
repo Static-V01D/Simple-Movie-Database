@@ -45,7 +45,7 @@ public class HttpUtils
         
         foreach(var key in redirectProps.AllKeys)
         {
-            query.Add($"{HttpUtility.UrlEncode(key)} ={HttpUtility.UrlEncode(redirectProps[key])}");
+            query.Add($"{HttpUtility.UrlEncode(key)}={HttpUtility.UrlEncode(redirectProps[key])}");
         }        
 
         res.Redirect(location + append + string.Join('&', query));

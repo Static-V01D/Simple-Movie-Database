@@ -74,7 +74,7 @@ public class ActorController
         {
            HttpUtils.AddOptions(options, "redirect", "message", "Actor added successfully!");        
 
-           await HttpUtils.Redirect(res, req, options, "/Actors"); //PRG
+           await HttpUtils.Redirect(res, req, options, "/actors"); //PRG
         }
         else
         {
@@ -82,7 +82,7 @@ public class ActorController
             HttpUtils.AddOptions(options, "redirect", formData);   
 
             
-            await HttpUtils.Redirect(res, req, options, "/Actors/add");
+            await HttpUtils.Redirect(res, req, options, "/actors/add");
         }
     }
 
@@ -109,7 +109,7 @@ public class ActorController
         else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);
-            await HttpUtils.Redirect(res, req, options, "/Actors");
+            await HttpUtils.Redirect(res, req, options, "/actors");
         }
     }
 
@@ -134,7 +134,7 @@ public class ActorController
          else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);
-            await HttpUtils.Redirect(res, req, options, "/Actors");
+            await HttpUtils.Redirect(res, req, options, "/actors");
         }
         
     }
@@ -157,13 +157,13 @@ public class ActorController
         if(result.IsValid)
         {
            HttpUtils.AddOptions(options, "redirect", "message", "Actor updated successfully!");
-           await HttpUtils.Redirect(res, req, options, "/Actors");
+           await HttpUtils.Redirect(res, req, options, "/actors");
         }
         else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);            
 
-            await HttpUtils.Redirect(res, req, options, "/Actors/edit");
+            await HttpUtils.Redirect(res, req, options, $"/actors/edit?aid={aid}");
         }
     }
 
@@ -178,12 +178,12 @@ public class ActorController
        if(result.IsValid)
         {
            HttpUtils.AddOptions(options, "redirect", "message", "Actor removed successfully!");
-           await HttpUtils.Redirect(res, req, options, "/Actors");
+           await HttpUtils.Redirect(res, req, options, "/actors");
         }
         else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);
-            await HttpUtils.Redirect(res, req, options, "/Actors/edit");
+            await HttpUtils.Redirect(res, req, options, "/actors/edit");
         }
     }
 }

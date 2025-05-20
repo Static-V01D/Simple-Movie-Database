@@ -160,7 +160,7 @@ public class UserController
         else
         {
             HttpUtils.AddOptions(options, "redirect","message", result.Error!.Message);
-            await HttpUtils.Redirect(res, req, options, "/users/edit");
+            await HttpUtils.Redirect(res, req, options, $"/users/edit?uid={uid}");
         }
     }
 

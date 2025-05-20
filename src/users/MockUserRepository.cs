@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace SMDB;
 
 public class MockUserRepository : IUserRepository
@@ -73,6 +75,13 @@ public class MockUserRepository : IUserRepository
             users.Remove(user);
            
         }
+        return await Task.FromResult(user);
+    }
+
+    public async Task<User?> GetUserByUsername(string username)
+    {
+        User? user = users.FirstOrDefault((u) => u.Username == username);
+
         return await Task.FromResult(user);
     }
 }
