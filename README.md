@@ -1,6 +1,6 @@
 # 🎬 Simple Movie Database
 
-A lightweight C# application designed to manage a collection of movies and actors, along with their associations.
+A server-side rendered (SSR) web application built with C#, designed to manage a collection of movies and actors, along with their associations.
 
 ## 📖 Overview
 
