@@ -43,3 +43,33 @@ The repository is organized as follows:
 
    ```bash
    git clone https://github.com/Static-V01D/Simple-Movie-Database.git
+   ```
+
+2. **Navigate to the Project Directory**:
+
+   ```bash
+   cd Simple-Movie-Database
+   ```
+
+3. **Build the Project**:
+
+   ```bash
+   dotnet build
+   ```
+
+4. **Run the Application**:
+
+   ```bash
+   dotnet run
+   ```
+
+   🧪 Usage
+Upon running the application, follow the on-screen prompts to:
+
+Add new movies by providing their titles.
+
+Add new actors by providing their names.
+
+Associate actors with movies they've appeared in.
+
+View lists of all movies, actors, and their associations.
