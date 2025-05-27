@@ -63,13 +63,11 @@ The repository is organized as follows:
    dotnet run
    ```
 
-   🧪 Usage
+ ## 🧪 Usage
+
 Upon running the application, follow the on-screen prompts to:
 
-Add new movies by providing their titles.
-
-Add new actors by providing their names.
-
-Associate actors with movies they've appeared in.
-
-View lists of all movies, actors, and their associations.
+- Add new movies by providing their titles.
+- Add new actors by providing their names.
+- Associate actors with movies they've appeared in.
+- View lists of all movies, actors, and their associations.
