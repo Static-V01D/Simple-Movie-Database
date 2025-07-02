@@ -10,7 +10,6 @@ This project serves as a basic movie database system, allowing users to:
 - Add and list actors.
 - Establish relationships between actors and the movies they've appeared in.
 
-It's an ideal starting point for those interested in understanding object relationships and data management in C#.
 
 ## 🛠️ Features
 
